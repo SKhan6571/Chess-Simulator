@@ -4,10 +4,12 @@ import Board.Board;
 
 public interface Renderer {
     // The renderer will assume that the board is located at a constant location in memory, set by 'setBoard()'.
-    // The update() and render() methods will be called every frame. May add a wrapper that calls both.
+    // The update() and display() methods will be called every frame.
+    // render() wraps both for convenience. But they are provided separately for flexibility.
 
-    void render(); // call update() before render()
+    void display(); // call update() before display()
     void update();
+    void render();
     void clear();
 
     void setBoard(Board board);
