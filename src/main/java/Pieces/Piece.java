@@ -25,7 +25,12 @@ public abstract class Piece extends Tile {
     }
 
     public List<Tile> getPossibleMoves(){
-        // use a strategy pattern here?
+        // use a strategy pattern here
         return null;
+    }
+
+    public String toString(){
+        // use strategy pattern here too!
+        return "";
     }
 }

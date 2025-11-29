@@ -3,7 +3,8 @@ package Board;
 import Pieces.Piece;
 import Pieces.Color;
 
-public class Tile {// not sure if this needs to be expanded...
+public class Tile {
+    // not sure if this needs to be expanded...
     private final int rank;
     private final int file;
     private final Color color;
