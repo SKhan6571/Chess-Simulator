@@ -5,7 +5,12 @@ import board.Tile;
 
 public class BoardPrinter {
 
+
+    ///////////WARNNING : BLACK PIECES LOOK WHITE AND VICE VERSA DUE TO UNICODE STANDARDS!!!!!!!
+
     public void printBoard(Board board) {
+        //newline for spacing
+        System.out.println();
         //start high rank and go down to low rank since high ranks are black side and should appear at the top
         for (int rank = 7; rank >= 0; rank--) {
             
@@ -31,7 +36,9 @@ public class BoardPrinter {
         }
         
         // Print column labels
-        System.out.println("   =============");
+        System.out.println("   ================");
         System.out.println("    a b c d e f g h");
+        //newline for spacing
+        System.out.println();
     }
 }
