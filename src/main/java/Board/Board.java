@@ -3,6 +3,7 @@ package Board;
 
 public abstract class Board {
     private Tile[][] tiles;
+    private int size = 7;
 
     Board(int size) {
         tiles = new Tile[size][size];
@@ -13,5 +14,12 @@ public abstract class Board {
         }
     }
 
+    public int getSize() {
+        return size;
+    }
+
+    public Tile getTile(int x, int y){
+        return tiles[x][y];
+    }
 
 }
