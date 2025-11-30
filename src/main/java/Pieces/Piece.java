@@ -49,7 +49,7 @@ public abstract class Piece {
                         }
                         break; // Blocked
                     }
-                    // break if piece doesnt slide
+                    // break if piece doesnt slide (means it only moves 1 space at a time)
                     if (!isSliding()) break; 
 
                     nextRank += dir[0];

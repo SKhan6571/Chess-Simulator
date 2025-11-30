@@ -23,7 +23,7 @@ public class BoardPrinter {
 
         //newline for spacing
         System.out.println();
-        System.out.println("  ╔═══╦═══╦═══╦═══╦═══╦═══╦═══╦═══╗");
+        System.out.println("   ╔═══╦═══╦═══╦═══╦═══╦═══╦═══╦═══╗");
 
 
         //start high rank and go down to low rank since high ranks are black side and should appear at the top
@@ -31,7 +31,7 @@ public class BoardPrinter {
         //goes through all tiles in a rank
 
             //Rank labels
-            System.out.print((rank + 1) + " ║");
+            System.out.print(" " + (rank + 1) + " ║");
 
 
             //goes through all tiles in a collumn
@@ -53,13 +53,13 @@ public class BoardPrinter {
             // Newline after every rank
             System.out.println();
             if (rank != firstRankAndCollumn) {
-                System.out.println("  ╠═══╬═══╬═══╬═══╬═══╬═══╬═══╬═══╣");
+                System.out.println("   ╠═══╬═══╬═══╬═══╬═══╬═══╬═══╬═══╣");
             }
         }
         
         // Print column labels
-        System.out.println("  ╚═══╩═══╩═══╩═══╩═══╩═══╩═══╩═══╝");
-        System.out.println("    a   b   c   d   e   f   g   h");
+        System.out.println("   ╚═══╩═══╩═══╩═══╩═══╩═══╩═══╩═══╝");
+        System.out.println("     a   b   c   d   e   f   g   h");
         //newline for spacing
         System.out.println();
     }
