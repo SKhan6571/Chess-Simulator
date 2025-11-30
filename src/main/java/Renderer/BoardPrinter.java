@@ -23,6 +23,26 @@ public class BoardPrinter {
 
         //newline for spacing
         System.out.println();
+        //top border of the board
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        System.out.println("    ______ __  __ ______  _____  _____ ");
+        System.out.println("   / ____// / / // ____/ / ___/ / ___/ ");
+        System.out.println("  / /    / /_/ // __/    \\__ \\  \\__ \\  ");
+        System.out.println(" / /___ / __  // /___   ___/ / ___/ /  ");
+        System.out.println(" \\____//_/ /_//_____/  /____/ /____/   ");
+        System.out.println();
+        System.out.println("        Welcome to Chess in Java!");
+        System.out.println();
         System.out.println("   ╔═══╦═══╦═══╦═══╦═══╦═══╦═══╦═══╗");
 
 
@@ -38,15 +58,21 @@ public class BoardPrinter {
             for (int file = firstRankAndCollumn; file <= finalRankAndCollumn; file++) {
                 Tile tile = board.getTile(rank, file);
                 
+                //checks if the tile is a possible move to highlight
                 if (highlights.contains(tile)) {
-                    System.out.print(" X "); // Print X if it's a valid move
-                } 
+                    if(!tile.isOccupied()) {
+                        System.out.print("«¤»"); // Prints «¤» if it's a valid move and not occupied
+                    } else {
+                        System.out.print("«" + tile.getPiece().toString() + "»"); // Print «X» if it's a valid capture
+                    }
+                } // else if the tile is occupied print the piece
                 else if (tile.isOccupied()) {
                     System.out.print(' ' + tile.getPiece().toString() + ' ');
-                } else {
+                } else { 
+                    //housekeeping for empty tiles
                     System.out.print("   ");
                 }
-
+                //print vertical separator between tiles
                 System.out.print('║');
 
             }

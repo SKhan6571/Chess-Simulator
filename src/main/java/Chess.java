@@ -1,52 +1,46 @@
-import board.Board;
 import board.Tile;
 import renderer.BoardPrinter;
 import java.util.Scanner;
 import input.InputHandler;
 import pieces.Piece;
 import java.util.List;
-import pieces.Color;
-import input.InputHandler;
+import game.Game;
 
 
 //main driver class for the chess game
+//To run the game, enter this in terminal: 'java Chess.java'
+//at any time during the game, type 'quit' to exit
 public class Chess {
     public static void main(String[] args) {
-        int moveCount = 1; // odd = white's turn, even = black's turn
-        int turnNumber = moveCount;
-
-        /// Initialize a new chess board
-        /// ///simple ascii board print test
-            ////////USES DEPENDENCY INJECTION!!!!!!!!!!!!!!!
-        Board board = new Board();
-        BoardPrinter.printBoard(board);
+        /// creates a new game instance
+        Game game = new Game(); 
+        
+        //////prints simple ascii board for development purposes
+        BoardPrinter.printBoard(game.getBoard());
         Scanner scanner = new Scanner(System.in);
 
         //primary game loop
-        while(true){
-            //calculate turn info
-            turnNumber = (moveCount + 1) / 2;
-            //determine who's turn it is. odd is white even is black
-            Color currentTurnColor = (moveCount % 2 != 0) ? Color.White : Color.Black;
-            //store turns seperate from moves to keep track of who is moving and what color they are
-            System.out.println("Turn " + turnNumber + ": It is " + currentTurnColor + "'s move.");
+        while(true) {
+            //two moves = one full game turn. white and black alternate moves. white goes first.
+            System.out.println("Turn " + game.getTurnNumber() + ": It is " + game.getCurrentTurnColor() + "'s move.");
 
-            Tile selectedTile = InputHandler.promptForSourceTile(scanner, board, currentTurnColor);
+            //ask user to pick a piece to move
+            Tile selectedTile = InputHandler.promptForSourceTile(scanner, game.getBoard(), game.getCurrentTurnColor());
 
-            // when user types quit it equals null and we can exit the game
+            // if user typed quit then we can exit the game with break
             if (selectedTile == null) break;
 
-            //display selected piece
+            //otherwise try to get the piece on the selected tile
             Piece selectedPiece = selectedTile.getPiece();
-            System.out.println("Selected Piece: " + selectedPiece.toString());
 
-            //display possible moves
-            List<Tile> possibleMoves = selectedPiece.getPossibleMoves(board, selectedTile);
-            BoardPrinter.printBoard(board, possibleMoves);
+            //print board with all legal/possible moves highlighted
+            List<Tile> possibleMoves = selectedPiece.getPossibleMoves(game.getBoard(), selectedTile);
+            BoardPrinter.printBoard(game.getBoard(), possibleMoves);
 
-            //increment move count if a move was made
-            boolean moveWasMade = InputHandler.promptForDestination(scanner, board, selectedTile, possibleMoves);
-            if (moveWasMade) { moveCount++; }
+            //prompt user to pick a destination for the piece to move to
+            boolean moveWasMade = InputHandler.promptForDestination(scanner, game.getBoard(), selectedTile, possibleMoves);
+            //if piece was moved successfully then increment move count
+            if (moveWasMade) { game.incrementMove(); }
         }
         scanner.close();
     }

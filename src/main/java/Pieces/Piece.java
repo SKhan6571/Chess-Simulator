@@ -22,13 +22,13 @@ public abstract class Piece {
     protected abstract int[][] getMoveDirections();
     protected abstract boolean isSliding(); // KNIGHT KING AND PAWN WILL RETURN FALSE (bc they only move 1 space at a time)
     //then the details of movement direction and sliding is used to get all th epossible moves for the selected piece
-    //pretty sure ill have to make pawn override this method entirely to account for its special movement rules
+    // pawn just overrides this method entirely to account for its special movement rules
     public List<Tile> getPossibleMoves(Board board, Tile start) {
         List<Tile> moves = new ArrayList<>();
         
         // which direction the piece can move.
         int[][] directions = getMoveDirections(); 
-        // Parent uses these to generate possible moves for each piece
+        // Parent uses this array to generate possible moves for each piece
 
         for (int[] baseDir : directions) {
             //ensures symmetries are considered because chess pieces can move whatever way.

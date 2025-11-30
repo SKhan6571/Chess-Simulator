@@ -85,7 +85,10 @@ public class InputHandler {
             String destInput = scanner.nextLine();
 
             if (destInput.equals("cancel")) {
-                return false; // Returning false means move wasnt made so we can reprompt for source tile
+                //if user cancels the move then we just reprint the board without highlights and return false to reprompt for piece again
+                destInput = null;
+                BoardPrinter.printBoard(board);
+                return false;
             }
 
             //use try catch to handle invalid input
