@@ -1,8 +1,14 @@
 package board;
 import pieces.PieceFactory;
+import renderer.GameObserver;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Board {
-    private Tile[][] tiles;
+    private final Tile[][] tiles;
+    // Board has a list of observers
+    private final List<GameObserver> observers = new ArrayList<>();
 
     public Board() {
         int size = 8;
@@ -10,15 +16,29 @@ public class Board {
 
         for (int rank = 0; rank < size; rank++) {
             for (int file = 0; file < size; file++) {
-                // Create a blaank tile at this coordinates
+                // Create a blank tile at this coordinates
                 tiles[rank][file] = new Tile(rank, file);
-                
-                //place the pieces onto the tile - some will be null if a piece doesnt go there
+
+                //place the pieces onto the tile - some will be null if a piece doesn't go there
                 tiles[rank][file].setPiece(PieceFactory.createPiece(rank, file));
 
 
-                /////UTILIZES FACTORRY PATTERN TO CREATE PIECES based on board pos!!!!!!!!!
+                /////UTILIZES FACTORY PATTERN TO CREATE PIECES based on board pos!!!!!!!!!
             }
+        }
+    }
+
+    /// /// UTILIZES OBSERVER PATTERN TO REGISTER AND NOTIFY OBSERVERS!!!
+
+    // Observer Pattern: Registration
+    public void addObserver(GameObserver observer) {
+        observers.add(observer);
+    }
+
+    // Observer Pattern: Notification
+    public void notifyObservers() {
+        for (GameObserver observer : observers) {
+            observer.onBoardUpdate(this);
         }
     }
 
@@ -26,7 +46,5 @@ public class Board {
         return tiles[rank][file];
     }
 
-    public void updateBoard() {
-        renderer.BoardPrinter.printBoard(this);
-    }
+    // We no longer need updateBoard() method. An observer prints the board when it changes state.
 }

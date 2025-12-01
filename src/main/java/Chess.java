@@ -1,10 +1,13 @@
 import board.Tile;
-import renderer.BoardPrinter;
-import java.util.Scanner;
+import game.Command;
+import game.Game;
 import input.InputHandler;
 import pieces.Piece;
+import renderer.BoardPrinter;
+import renderer.ConsoleGameObserver;
+
 import java.util.List;
-import game.Game;
+import java.util.Scanner;
 
 
 //main driver class for the chess game
@@ -12,10 +15,14 @@ import game.Game;
 //at any time during the game, type 'quit' to exit
 public class Chess {
     public static void main(String[] args) {
-        /// creates a new game instance
-        Game game = new Game(); 
-        
-        //////prints simple ascii board for development purposes
+        // Singleton: Get the single instance of Game
+        Game game = Game.getInstance();
+
+        // Observer: Register the console renderer to the board
+        // This ensures the board prints automatically whenever a move executes or undoes
+        game.getBoard().addObserver(new ConsoleGameObserver());
+
+        // Initial Print
         BoardPrinter.printBoard(game.getBoard());
 
         //open scanner for user input
@@ -26,25 +33,30 @@ public class Chess {
             //two moves = one full game turn. white and black alternate moves. white goes first.
             System.out.println("Turn " + game.getTurnNumber() + ": It is " + game.getCurrentTurnColor() + "'s move.");
 
-            //ask user to pick a piece to move
-            Tile selectedTile = InputHandler.promptForSourceTile(scanner, game.getBoard(), game.getCurrentTurnColor());
+            // 1. Select Piece (Handle Undo inside here)
+            Tile selectedTile = InputHandler.promptForSourceTile(scanner, game);
 
-            // if user typed quit then we can exit the game using break
-            if (selectedTile == null) break;
+            // Null means user typed 'quit' or 'undo'.
+            // If undo, the board already updated via Observer, so we just loop again.
+            if (selectedTile == null) {
+                continue;
+            }
 
             //otherwise try to get the piece on the selected tile
             Piece selectedPiece = selectedTile.getPiece();
 
-            //print board where all legal/possible moves for the selected piece are highlighted
+            // Highlight moves (Direct call still okay for temporary UI state)
             List<Tile> possibleMoves = selectedPiece.getPossibleMoves(game.getBoard(), selectedTile);
             BoardPrinter.printBoard(game.getBoard(), possibleMoves);
 
-            //prompt user to pick a destination for the piece to move to
-            boolean moveWasMade = InputHandler.promptForDestination(scanner, game.getBoard(), selectedTile, possibleMoves);
-            //if piece was moved successfully then increment move count
-            if (moveWasMade) { game.incrementMove(); }
+            // 2. Select Destination and Create Command
+            Command moveCommand = InputHandler.promptForDestination(scanner, game, selectedTile, possibleMoves);
+
+            if (moveCommand != null) {
+                // Command: Execute via Invoker (Game)
+                game.executeMove(moveCommand);
+                // The Observer triggers the Board Print here automatically
+            }
         }
-        //close scanner upon exiting game loop to prevent resource leak
-        scanner.close();
     }
 }

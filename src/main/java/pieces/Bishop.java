@@ -10,7 +10,7 @@ class Bishop extends Piece {
     @Override
     protected boolean isSliding() { return true; }
 
-    // for the dipslay of the piece
+    // for the display of the piece
     @Override
     public String toString() {
         return this.getColor() == Color.Black ? "\u2657" : "\u265D";
