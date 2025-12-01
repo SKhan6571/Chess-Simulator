@@ -9,10 +9,10 @@ class King extends Piece {
     @Override
     protected boolean isSliding() { return false; }
 
-    // for the dipslay of the piece
+    // for the display of the piece
     @Override
     public String toString() {
-        //asciii code for chesss pieces
+        //ascii code for chess pieces
         return this.getColor() == Color.Black ? "\u2654" : "\u265A";
     }
 }

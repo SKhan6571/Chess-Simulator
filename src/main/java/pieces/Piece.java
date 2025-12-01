@@ -1,9 +1,10 @@
 package pieces;
-import java.util.ArrayList;
-import java.util.List;
 
 import board.Board;
 import board.Tile;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 //////// TEMPLATE METHOD PATTERN USED HERE FOR ALL PIECES!!!!!!!!!!

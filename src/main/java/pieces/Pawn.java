@@ -1,10 +1,10 @@
 package pieces;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import board.Board;
 import board.Tile;
+
+import java.util.ArrayList;
+import java.util.List;
 
 class Pawn extends Piece { 
     public Pawn(Color c) { super(c); } 
@@ -13,10 +13,10 @@ class Pawn extends Piece {
     @Override protected int[][] getMoveDirections() { return new int[][]{}; }
     @Override protected boolean isSliding() { return false; }
 
-    // for the dipslay of the piece
+    // for the display of the piece
     @Override
     public String toString() {
-        //  asciii code for chesss pieces
+        //  ascii code for chess pieces
         return this.getColor() == Color.Black ? "\u2659" : "\u265F";
     }
 

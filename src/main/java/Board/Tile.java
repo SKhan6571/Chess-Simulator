@@ -12,8 +12,9 @@ public class Tile {
         this.piece = null;
     }
 
-    public void setPiece(Piece piece) {
+    public Piece setPiece(Piece piece) {
         this.piece = piece;
+        return piece;
     }
 
     public Piece getPiece() {
