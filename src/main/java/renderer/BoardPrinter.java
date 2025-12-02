@@ -1,8 +1,10 @@
 package renderer;
-import java.util.List;
-import java.util.ArrayList;
+
 import board.Board;
 import board.Tile;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class BoardPrinter {
     private static final int firstRankAndCollumn = 0;
