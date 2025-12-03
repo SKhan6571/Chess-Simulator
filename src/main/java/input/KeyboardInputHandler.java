@@ -52,7 +52,7 @@ public class KeyboardInputHandler {
 
             //use try catch to handle invalid input and restart loop
             try {
-                int[] pieceLocation = InputHandler.parseInput(rawInput);
+                int[] pieceLocation = KeyboardInputHandler.parseInput(rawInput);
                 Tile target = board.getTile(pieceLocation[0], pieceLocation[1]);
 
                 // VALIDATION CHECKS
@@ -102,7 +102,7 @@ public class KeyboardInputHandler {
             //use try catch to handle invalid input
             try {
                 //  parse input and get target tile
-                int[] destCoords = InputHandler.parseInput(destInput);
+                int[] destCoords = KeyboardInputHandler.parseInput(destInput);
                 Tile targetTile = board.getTile(destCoords[0], destCoords[1]);
 
                 if (allowedMoves.contains(targetTile)) {
