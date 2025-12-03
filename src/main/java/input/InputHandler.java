@@ -39,7 +39,9 @@ public class InputHandler {
 
             // secret option to exit
             if (rawInput.equals("q") || rawInput.equals("quit") || rawInput.equals("exit")) {
-                return null;
+                final int dummyRank = -1;
+                final int dummyFile = -1;
+                return new Tile(dummyRank, dummyFile);
             }
 
             // Hook for Undo

@@ -36,10 +36,16 @@ public class Chess {
             // 1. Select Piece (Handle Undo inside here)
             Tile selectedTile = InputHandler.promptForSourceTile(scanner, game);
 
-            // Null means user typed 'quit' or 'undo'.
+            // Null means user typed 'undo'.
             // If undo, the board already updated via Observer, so we just loop again.
             if (selectedTile == null) {
                 continue;
+            }
+
+            // We return a dummy tile (with rank and file equal to -1) if user typed
+            // 'quit' so we can break from the loop and exit
+            if (selectedTile.getRank() == -1 && selectedTile.getFile() == -1) {
+                break;
             }
 
             //otherwise try to get the piece on the selected tile
