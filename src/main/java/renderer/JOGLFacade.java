@@ -1,10 +1,12 @@
 package renderer;
 
 import board.Board;
+import board.Tile;
 import com.jogamp.opengl.*;
 import com.jogamp.opengl.awt.GLCanvas;
 
 import javax.swing.*;
+import java.util.List;
 
 public class JOGLFacade implements Renderer {
     private final GLCanvas canvas;
@@ -38,6 +40,11 @@ public class JOGLFacade implements Renderer {
     @Override
     public void setBoard(Board board) {
         impl.setBoard(board);
+    }
+
+    @Override
+    public void setHighlightedTiles(List<Tile> highlightedTiles) {
+        impl.setHighlightedTiles(highlightedTiles);
     }
 
     @Override

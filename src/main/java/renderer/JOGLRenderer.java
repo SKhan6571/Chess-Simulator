@@ -1,6 +1,7 @@
 package renderer;
 
 import board.Board;
+import board.Tile;
 import com.jogamp.opengl.*;
 import com.jogamp.opengl.util.texture.Texture;
 import com.jogamp.opengl.util.texture.TextureIO;
@@ -17,11 +18,15 @@ public class JOGLRenderer implements GLEventListener {
     static private final int TEXTURE_WIDTH = 1028;
     static private final String TEXTURES_PATH = "textures/default";
 
+    static private final int RANK_COUNT = 8;
+    static private final int FILE_COUNT = 8;
 
 
     private Board board;
+    private List<Tile> highlightedTiles = new ArrayList<>();
     private GL2 gl;
     private final TextureLoader textures = new TextureLoader(TEXTURES_PATH); // may want to consider making this configurable
+
 
     void setBoard(Board board) {
         this.board = board;
@@ -31,14 +36,57 @@ public class JOGLRenderer implements GLEventListener {
         gl.glClear(GL.GL_COLOR_BUFFER_BIT);
     }
 
+
+    private Texture getTextureForTile(Tile tile) {
+        String baseName = "tile_" + tile.getColor().toString().toLowerCase();
+        String endName = highlightedTiles.contains(tile) ? "_light" : "_dark";
+        String name = baseName + endName;
+        return textures.getTexture(name);
+    }
+
     void drawBoard() {
-        // TODO: pretty much just black and white squares, needs logic for highlighting valid moves (dark -> light)
-        // this never changes, so separate function
+        for (int rank = 0; rank < RANK_COUNT; rank++) {
+            // order doesn't matter, as long as the coords are calculated correctly!
+            for (int file = 0; file < FILE_COUNT; file++) {
+                Tile tile = board.getTile(rank, file);
+                Texture tex = getTextureForTile(tile);
+                drawTexturedQuadBoardCoords(tex, file, rank);
+            }
+        }
     }
 
     void drawPieces() {
-        // TODO
+        // TODO: I need a list of active pieces to draw, this code needs to be FAST, so searching every tile is not acceptable!
         // parse the board and draw pieces
+
+    }
+
+    void drawTexturedQuadBoardCoords(Texture tex, float x, float y) {
+        drawTexturedQuad(tex, x, y, 1, 1);
+    }
+
+    void drawTexturedQuad(Texture tex, float x, float y, float width, float height) {
+        tex.enable(gl);
+        tex.bind(gl);
+
+        // texture coordinate, then vertex location
+        gl.glBegin(GL2.GL_QUADS);
+
+        gl.glTexCoord2f(0f, 0f);
+        gl.glVertex2f(x, y);
+
+        gl.glTexCoord2f(1f, 0f);
+        gl.glVertex2f(x + width, y);
+
+        gl.glTexCoord2f(1f, 1f);
+        gl.glVertex2f(x + width, y + height);
+
+        gl.glTexCoord2f(0f, 1f);
+        gl.glVertex2f(x, y + height);
+
+        gl.glEnd();
+
+        tex.disable(gl);
     }
 
 
@@ -46,7 +94,7 @@ public class JOGLRenderer implements GLEventListener {
     public void init(GLAutoDrawable drawable) {
         gl = drawable.getGL().getGL2();
         gl.glClearColor(0, 0, 0, 0);
-        //TODO: shaders (shouldn't need for GL2)
+        //shaders shouldn't need for GL2. This is where we would load them
         textures.loadAll();
     }
 
@@ -58,16 +106,28 @@ public class JOGLRenderer implements GLEventListener {
 
     @Override
     public void display(GLAutoDrawable drawable) {
-        if(board == null) return;
+        if (board == null) return;
         drawBoard();
         drawPieces();
     }
 
     @Override
     public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
-        gl.glViewport(0, 0, width, height); //2D orthographic projection, so no black magic needs to occur.
+        gl.glViewport(0, 0, width, height);
+        //2D orthographic projection, so only a little black magic needs to occur.
+
+        gl.glMatrixMode(GL2.GL_PROJECTION);
+        gl.glLoadIdentity();
+        // this sets (0,0) as the bottom left corner, and (8,8) as the top right corner
+        gl.glOrtho(0, 8.0,
+                0, 8.0,
+                -1, 1);
+        // TODO: rotate 180 deg when the player is black
     }
 
+    public void setHighlightedTiles(List<Tile> highlightedTiles) {
+        this.highlightedTiles = highlightedTiles;
+    }
 
     /// Loads all textures (rasterized image files) in the directory it is given (recursively).
     /// Maintains a map of textures, keyed to the filename without the extension for later use: "white_king.png" -> "white_king"
@@ -89,16 +149,16 @@ public class JOGLRenderer implements GLEventListener {
             this.supportedExt = exts;
         }
 
-        private String normalizeRoot(String p){
+        private String normalizeRoot(String p) {
             // make sure the path ends with a '/' and doesn't start with one.
             String r = p;
-            if(r.startsWith("/")) r = r.substring(1);
-            if(r.endsWith("/")) r = r.substring(0, r.length()-1);
+            if (r.startsWith("/")) r = r.substring(1);
+            if (r.endsWith("/")) r = r.substring(0, r.length() - 1);
             return r;
         }
 
 
-        public void loadAll(){
+        public void loadAll() {
             ClassLoader cl = Thread.currentThread().getContextClassLoader();
             URL root = cl.getResource(rootDir);
 
@@ -106,12 +166,12 @@ public class JOGLRenderer implements GLEventListener {
                 throw new IllegalStateException("Root directory not found: " + rootDir);
             }
 
-            if(!"file".equals(root.getProtocol())) {
+            if (!"file".equals(root.getProtocol())) {
                 throw new IllegalStateException("Root directory must be a file path: " + rootDir);
             }
 
             File rootFile = new File(root.getPath());
-            if(!rootFile.isDirectory()) {
+            if (!rootFile.isDirectory()) {
                 throw new IllegalStateException("Root directory must be a directory: " + rootDir);
             }
             scanDirectory(rootFile, rootDir);
@@ -120,32 +180,31 @@ public class JOGLRenderer implements GLEventListener {
 
         /// This is recursive to allow "creative" file structures for textures.
         /// Each texture will be loaded under the final filename, so make sure those are unique!
-        private void scanDirectory(File dir, String classpathPrefix){
+        private void scanDirectory(File dir, String classpathPrefix) {
             File[] files = dir.listFiles();
-            if(files == null) return;
+            if (files == null) return;
 
-            for(File file : files){
-                if(file.isDirectory()){
+            for (File file : files) {
+                if (file.isDirectory()) {
                     String filePrefix = classpathPrefix + "/" + file.getName();
                     scanDirectory(file, filePrefix);
-                }else{
+                } else {
                     String fileName = file.getName();
                     String fullpath = classpathPrefix + "/" + fileName;
 
                     // check that the file has a valid extension
                     int dotIndex = fileName.lastIndexOf('.');
-                    if (dotIndex <= 0 || dotIndex >= fileName.length() - 1){
+                    if (dotIndex <= 0 || dotIndex >= fileName.length() - 1) {
                         throw new IllegalArgumentException("Invalid texture file name: " + fullpath);
                     }
 
                     // check that the extension is supported
                     String ext = fileName.substring(dotIndex + 1).toLowerCase();
-                    if (supportedExt.contains(ext)){
+                    if (supportedExt.contains(ext)) {
                         //if it is, load it
                         String key = fileName.substring(0, dotIndex);
                         loadTexture(fullpath, key);
-                    }
-                    else{
+                    } else {
                         // else throw exception
                         throw new IllegalArgumentException("Unsupported texture file extension: " + fullpath);
                     }
@@ -153,32 +212,36 @@ public class JOGLRenderer implements GLEventListener {
             }
         }
 
-        private void loadTexture(String resourcePath, String key){
+        private void loadTexture(String resourcePath, String key) {
             try (InputStream is = getClass().getResourceAsStream(resourcePath)) {
                 if (is == null) {
                     throw new IllegalStateException("Texture not found: " + resourcePath);
                 }
-                if(loadedTextures.contains(key)) throw new IllegalStateException("Duplicate texture key: " + key);
+                if (loadedTextures.contains(key)) throw new IllegalStateException("Duplicate texture key: " + key);
 
                 Texture texture = TextureIO.newTexture(is, false, "png");//this is where we would extend to support other formats
                 textureMap.put(key, texture);
                 loadedTextures.add(key);
 
-            }catch (IOException e){
-                throw new RuntimeException("Failed to load texture: ",e);
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to load texture: ", e);
             }
         }
 
-        public Texture getTexture(String key){
+        public Texture getTexture(String key) {
             return textureMap.get(key);
         }
 
-        public Set<String> getLoadedTextures(){
+        public Set<String> getLoadedTextures() {
             return loadedTextures;
         }
 
-        public Map<String, Texture> getAll(){
+        public Map<String, Texture> getAll() {
             return Collections.unmodifiableMap(textureMap);
         }
+    }
+
+    private static class LowLevelRenderer {
+
     }
 }

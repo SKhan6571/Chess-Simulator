@@ -1,6 +1,8 @@
 package board;
 import pieces.Piece;
 
+import java.awt.*;
+
 public class Tile {
     private Piece piece;
     protected int rank;
@@ -31,5 +33,9 @@ public class Tile {
 
     public int getFile() {
         return this.file;
+    }
+
+    public Color getColor() {
+        return ((file + rank) % 2 == 0) ? Color.WHITE : Color.BLACK;
     }
 }
