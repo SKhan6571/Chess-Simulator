@@ -12,7 +12,7 @@ import renderer.BoardPrinter;
 import java.util.List;
 import java.util.Scanner;
 
-//This is depriciated, and should be replaced with the an implementation of InputHandler
+//This is depriciated, and should be replaced with an implementation of InputHandler
 public class KeyboardInputHandler {
     //helper function to parse standard chess notation like for the ascii board input
     public static int[] parseInput(String input) {

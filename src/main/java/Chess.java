@@ -2,9 +2,12 @@ import board.Tile;
 import game.Command;
 import game.Game;
 import input.InputHandler;
+import input.KeyboardInputHandler;
 import pieces.Piece;
 import renderer.BoardPrinter;
 import renderer.ConsoleGameObserver;
+//import renderer.JOGLFacade;
+import renderer.Renderer;
 
 import java.util.List;
 import java.util.Scanner;
@@ -17,6 +20,7 @@ public class Chess {
     public static void main(String[] args) {
         // Singleton: Get the single instance of Game
         Game game = Game.getInstance();
+//        Renderer renderer = new JOGLFacade();
 
         // Observer: Register the console renderer to the board
         // This ensures the board prints automatically whenever a move executes or undoes
@@ -34,7 +38,7 @@ public class Chess {
             System.out.println("Turn " + game.getTurnNumber() + ": It is " + game.getCurrentTurnColor() + "'s move.");
 
             // 1. Select Piece (Handle Undo inside here)
-            Tile selectedTile = InputHandler.promptForSourceTile(scanner, game);
+            Tile selectedTile = KeyboardInputHandler.promptForSourceTile(scanner, game);
 
             // Null means user typed 'quit' or 'undo'.
             // If undo, the board already updated via Observer, so we just loop again.
@@ -50,7 +54,7 @@ public class Chess {
             BoardPrinter.printBoard(game.getBoard(), possibleMoves);
 
             // 2. Select Destination and Create Command
-            Command moveCommand = InputHandler.promptForDestination(scanner, game, selectedTile, possibleMoves);
+            Command moveCommand = KeyboardInputHandler.promptForDestination(scanner, game, selectedTile, possibleMoves);
 
             if (moveCommand != null) {
                 // Command: Execute via Invoker (Game)

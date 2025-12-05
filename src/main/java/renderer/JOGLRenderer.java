@@ -61,8 +61,8 @@ public class JOGLRenderer implements GLEventListener {
 
     }
 
-    void drawTexturedQuadBoardCoords(Texture tex, float x, float y) {
-        drawTexturedQuad(tex, x, y, 1, 1);
+    void drawTexturedQuadBoardCoords(Texture tex, int rank, int file) {
+        drawTexturedQuad(tex, rank, file, 1, 1);
     }
 
     void drawTexturedQuad(Texture tex, float x, float y, float width, float height) {
