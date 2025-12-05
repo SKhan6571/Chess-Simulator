@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'application'
 }
 
 group = 'org.example'
@@ -20,8 +21,18 @@ dependencies {
 
     implementation "org.jogamp.jogl:jogl-all-main:2.6.0"
     implementation "org.jogamp.gluegen:gluegen-rt-main:2.6.0"
+
+
+    //for gui
+    implementation 'org.jogamp.gluegen:gluegen-rt-main:2.5.0'
+    implementation 'org.jogamp.jogl:jogl-all-main:2.5.0'
 }
 
 test {
     useJUnitPlatform()
+}
+
+application {
+    // This tells Gradle where public static void main is
+    mainClass = 'Chess' 
 }
