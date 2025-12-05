@@ -30,7 +30,7 @@ public class Chess {
 
         InputHandler inputHandler = new MouseInputHandler(game);
         InputManager inputManager = new InputManager();
-        MouseInputSource mouseInputSource = new MouseInputSource(inputManager);
+        new MouseInputSource(inputManager); // This registers the mouse listener
 
         //noinspection InfiniteLoopStatement
         while(true){
@@ -39,7 +39,6 @@ public class Chess {
                 inputHandler.handleInput(inputEvent);
             }catch (InterruptedException  e){
                 Thread.currentThread().interrupt();
-
             }
         }
 
