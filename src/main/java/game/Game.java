@@ -104,4 +104,14 @@ public class Game {
     public void swapPieceTile(Tile start, Tile end){
         piecesOnBoard.set(piecesOnBoard.indexOf(start), end);
     }
+
+    public Color getTurnColor(){
+        return Color.fromMoveCount(moveCount);
+    }
+
+    // this determines whether the renderer should rotate the board or not
+    public boolean shouldRotateBoard(){
+        // TODO: determine whether the board should be rotated
+        return true; // always true for now
+    }
 }

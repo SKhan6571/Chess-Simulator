@@ -7,6 +7,7 @@ import pieces.Piece;
 import renderer.BoardPrinter;
 import renderer.ConsoleGameObserver;
 //import renderer.JOGLFacade;
+import renderer.JOGLGameObserver;
 import renderer.Renderer;
 
 import java.util.List;
@@ -20,11 +21,12 @@ public class Chess {
     public static void main(String[] args) {
         // Singleton: Get the single instance of Game
         Game game = Game.getInstance();
-//        Renderer renderer = new JOGLFacade();
+
 
         // Observer: Register the console renderer to the board
         // This ensures the board prints automatically whenever a move executes or undoes
         game.getBoard().addObserver(new ConsoleGameObserver());
+        game.getBoard().addObserver(new JOGLGameObserver(game));
 
         // Initial Print
         BoardPrinter.printBoard(game.getBoard());

@@ -1,9 +1,9 @@
 package renderer;
 
-import board.Board;
 import board.Tile;
 import com.jogamp.opengl.*;
 import com.jogamp.opengl.awt.GLCanvas;
+import com.jogamp.opengl.util.FPSAnimator;
 import game.Game;
 
 import javax.swing.*;
@@ -12,6 +12,7 @@ import java.util.List;
 public class JOGLFacade implements Renderer {
     private final GLCanvas canvas;
     private final JOGLRenderer impl;
+    private final FPSAnimator animator; //used to keep the game displayed during some edge cases
 
     public JOGLFacade() {
         GLProfile profile = GLProfile.get(GLProfile.GL2);
@@ -26,6 +27,9 @@ public class JOGLFacade implements Renderer {
         frame.add(canvas);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
+
+        animator = new FPSAnimator(canvas, 60);
+        animator.start();
     }
 
     @Override

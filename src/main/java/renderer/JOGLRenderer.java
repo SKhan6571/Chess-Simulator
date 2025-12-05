@@ -8,17 +8,20 @@ import com.jogamp.opengl.util.texture.TextureIO;
 import game.Game;
 import pieces.Piece;
 
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Array;
 import java.net.URL;
 import java.util.*;
+import java.util.List;
+
+import pieces.Color;
 
 public class JOGLRenderer implements GLEventListener {
     static private final int TEXTURE_HEIGHT = 1028;
     static private final int TEXTURE_WIDTH = 1028;
-    static private final String TEXTURES_PATH = "textures/default";
+    static private final String TEXTURES_PATH = "textures/default_textures";
 
     static private final int RANK_COUNT = 8;
     static private final int FILE_COUNT = 8;
@@ -63,7 +66,6 @@ public class JOGLRenderer implements GLEventListener {
     }
 
     void drawPieces() {
-        // parse the board and draw pieces
         List<Tile> activeTiles = game.getPiecesOnBoard();
         for (Tile tile : activeTiles) {
             Piece piece = tile.getPiece();
@@ -74,10 +76,15 @@ public class JOGLRenderer implements GLEventListener {
     }
 
     void drawTexturedQuadBoardCoords(Texture tex, int rank, int file) {
-        drawTexturedQuad(tex, rank, file, 1, 1);
+        if (game.shouldRotateBoard() && game.getCurrentTurnColor() == Color.Black) {
+            drawTexturedQuad(tex, 7 - file, 7 - rank, 1, 1); // invert the board
+        } else {
+            drawTexturedQuad(tex, file, rank, 1, 1);
+        }
     }
 
     void drawTexturedQuad(Texture tex, float x, float y, float width, float height) {
+        if (tex == null) throw new IllegalArgumentException("Texture cannot be null");
         tex.enable(gl);
         tex.bind(gl);
 
@@ -108,6 +115,8 @@ public class JOGLRenderer implements GLEventListener {
         gl.glClearColor(0, 0, 0, 0);
         //shaders shouldn't need for GL2. This is where we would load them
         textures.loadAll();
+        gl.glEnable(GL2.GL_BLEND);
+        gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE_MINUS_SRC_ALPHA);
     }
 
     @Override
@@ -118,23 +127,32 @@ public class JOGLRenderer implements GLEventListener {
 
     @Override
     public void display(GLAutoDrawable drawable) {
+        this.gl = drawable.getGL().getGL2();
+
+        int w = drawable.getSurfaceWidth();
+        int h = drawable.getSurfaceHeight();
+
+        gl.glViewport(0, 0, w, h);
+
+        gl.glMatrixMode(GL2.GL_PROJECTION);
+        gl.glLoadIdentity();
+        gl.glOrtho(0, 8.0, 0, 8.0, -1, 1);
+
+        // TODO: rotate 180 deg when the player is black?
+        gl.glMatrixMode(GL2.GL_MODELVIEW);
+        gl.glLoadIdentity();
+
+        gl.glClear(GL.GL_COLOR_BUFFER_BIT);
+
         if (board == null) return;
+
         drawBoard();
         drawPieces();
     }
 
+
     @Override
     public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
-        gl.glViewport(0, 0, width, height);
-        //2D orthographic projection, so only a little black magic needs to occur.
-
-        gl.glMatrixMode(GL2.GL_PROJECTION);
-        gl.glLoadIdentity();
-        // this sets (0,0) as the bottom left corner, and (8,8) as the top right corner
-        gl.glOrtho(0, 8.0,
-                0, 8.0,
-                -1, 1);
-        // TODO: rotate 180 deg when the player is black
     }
 
     public void setHighlightedTiles(List<Tile> highlightedTiles) {
@@ -225,7 +243,8 @@ public class JOGLRenderer implements GLEventListener {
         }
 
         private void loadTexture(String resourcePath, String key) {
-            try (InputStream is = getClass().getResourceAsStream(resourcePath)) {
+            ClassLoader cl = Thread.currentThread().getContextClassLoader();
+            try (InputStream is = cl.getResourceAsStream(resourcePath)) {
                 if (is == null) {
                     throw new IllegalStateException("Texture not found: " + resourcePath);
                 }
