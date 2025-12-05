@@ -1,8 +1,11 @@
 package game;
 
 import board.Board;
+import board.Tile;
 import pieces.Color;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Stack;
 
 public class Game {
@@ -10,6 +13,7 @@ public class Game {
     private static Game instance;
 
     private final Board board;
+    private final List<Tile> piecesOnBoard;
     private int moveCount;
 
     // Command History
@@ -18,6 +22,7 @@ public class Game {
     // Private constructor
     private Game() {
         this.board = new Board();
+        this.piecesOnBoard = new ArrayList<>();
         this.moveCount = 1;
     }
 
@@ -69,5 +74,21 @@ public class Game {
 
     public Board getBoard() {
         return board;
+    }
+
+    public List<Tile> getPiecesOnBoard() {
+        return piecesOnBoard;
+    }
+
+    public void removePiece(Tile tile) {
+        piecesOnBoard.remove(tile);
+    }
+
+    public void addPiece(Tile tile) {
+        piecesOnBoard.add(tile);
+    }
+
+    public void swapPieceTile(Tile start, Tile end){
+        piecesOnBoard.set(piecesOnBoard.indexOf(start), end);
     }
 }

@@ -24,6 +24,12 @@ public class MoveCommand implements Command {
         endTile.setPiece(movedPiece);
         startTile.setPiece(null);
 
+        // update piece tracker
+        if(endTile.getPiece() != null){
+            game.removePiece(endTile);
+        }
+        game.swapPieceTile(startTile, endTile);
+
         // Notify observers that state changed
         game.getBoard().notifyObservers();
     }
@@ -33,6 +39,12 @@ public class MoveCommand implements Command {
         // Reverse the move
         startTile.setPiece(movedPiece);
         endTile.setPiece(capturedPiece); // Restore captured piece (or null)
+
+        // undo piece tracker updates
+        game.swapPieceTile(endTile, startTile);
+        if(capturedPiece != null){
+            game.addPiece(endTile);
+        }
 
         // Notify observers that state changed
         game.getBoard().notifyObservers();
