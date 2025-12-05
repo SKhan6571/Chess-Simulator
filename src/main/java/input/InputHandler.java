@@ -71,9 +71,9 @@ public class InputHandler {
                 }
 
                 //does the piece have any valid moves
-                List<Tile> moves = pieceOnTile.getPossibleMoves(board, target);
+                List<Tile> moves = pieceOnTile.getLegalMoves(board, target);
                 if (moves.isEmpty()) {
-                    System.out.println("Error: That piece has no valid moves! Try again!");
+                    System.out.println("Error: That piece has no legal moves (Check?)! Try again!");
                     continue; 
                 }
 

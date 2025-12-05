@@ -1,11 +1,15 @@
+import board.Board;
 import board.Tile;
 import game.Command;
 import game.Game;
 import input.InputHandler;
+import pieces.Color;
 import pieces.Piece;
 import renderer.BoardPrinter;
 import renderer.ConsoleGameObserver;
 
+import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Scanner;
 
@@ -15,6 +19,13 @@ import java.util.Scanner;
 //at any time during the game, type 'quit' to exit
 public class Chess {
     public static void main(String[] args) {
+
+        try {
+            System.setOut(new PrintStream(System.out, true, StandardCharsets.UTF_8));
+        } catch (Exception e) {
+            System.err.println("Could not set UTF-8 encoding");
+        }
+
         // Singleton: Get the single instance of Game
         Game game = Game.getInstance();
 
@@ -30,6 +41,24 @@ public class Chess {
 
         //primary game loop
         while(true) {
+            Color currentColor = game.getCurrentTurnColor();
+            Board board = game.getBoard();
+
+            // Checkmate / Check Detection
+            if (board.isInCheck(currentColor)) {
+                if (board.isCheckmate(currentColor)) {
+                    System.out.println("\u001B[31mCHECKMATE! " + (currentColor == Color.White ? "Black" : "White") + " wins!\u001B[0m");
+                    break;
+                }
+                System.out.println("\u001B[33mCHECK!\u001B[0m");
+            } else {
+                // Optional: Stalemate check
+                if (!board.hasLegalMoves(currentColor)) {
+                    System.out.println("\u001B[33mSTALEMATE! The game is a draw.\u001B[0m");
+                    break;
+                }
+            }
+
             //two moves = one full game turn. white and black alternate moves. white goes first.
             System.out.println("Turn " + game.getTurnNumber() + ": It is " + game.getCurrentTurnColor() + "'s move.");
 
@@ -52,7 +81,7 @@ public class Chess {
             Piece selectedPiece = selectedTile.getPiece();
 
             // Highlight moves (Direct call still okay for temporary UI state)
-            List<Tile> possibleMoves = selectedPiece.getPossibleMoves(game.getBoard(), selectedTile);
+            List<Tile> possibleMoves = selectedPiece.getLegalMoves(game.getBoard(), selectedTile);
             BoardPrinter.printBoard(game.getBoard(), possibleMoves);
 
             // 2. Select Destination and Create Command
