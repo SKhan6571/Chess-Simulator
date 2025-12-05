@@ -46,5 +46,10 @@ public class Board {
         return tiles[rank][file];
     }
 
-    // We no longer need updateBoard() method. An observer prints the board when it changes state.
+    public void highlightTiles(List<Tile> tiles){
+        for (GameObserver observer : observers) {
+            observer.highlightTiles(tiles);
+            observer.onBoardUpdate(this);
+        }
+    }
 }

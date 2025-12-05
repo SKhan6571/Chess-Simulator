@@ -38,4 +38,16 @@ public class Tile {
     public Color getColor() {
         return ((file + rank) % 2 == 0) ? Color.White : Color.Black;
     }
+
+    public String toString() {
+        char fileLetter = (char) ('a' + file);
+        int rankNumber = 1 + rank;
+        return "" + fileLetter + rankNumber;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof Tile objTile)) return false;
+        return (this.rank == objTile.getRank()) && (this.file == objTile.file);
+    }
 }

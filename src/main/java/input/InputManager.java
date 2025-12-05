@@ -1,16 +1,19 @@
 package input;
 
-import java.util.Queue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 public class InputManager implements InputListener{
-    private final Queue<InputEvent> inputQueue = new java.util.LinkedList<>();
+    private final BlockingQueue<InputEvent> inputQueue = new LinkedBlockingQueue<>();
 
     @Override
     public void onInput(InputEvent event) {
-        inputQueue.add(event);
+        if (event != null) {
+            inputQueue.offer(event);
+        }
     }
 
-    public InputEvent getNextInput() {
-        return inputQueue.poll();
+    public InputEvent getNextInput() throws InterruptedException{
+        return inputQueue.take();
     }
 }

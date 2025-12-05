@@ -10,16 +10,23 @@ import javax.swing.*;
 import java.util.List;
 
 public class JOGLFacade implements Renderer {
+    private static JOGLFacade instance;
+
+    public static JOGLFacade getInstance() {
+        if (instance == null) instance = new JOGLFacade();
+        return instance;
+    }
+
     private final GLCanvas canvas;
     private final JOGLRenderer impl;
     private final FPSAnimator animator; //used to keep the game displayed during some edge cases
 
-    public JOGLFacade() {
+    private JOGLFacade() {
         GLProfile profile = GLProfile.get(GLProfile.GL2);
         GLCapabilities caps = new GLCapabilities(profile);
         this.canvas = new GLCanvas(caps);
 
-        this.impl = new JOGLRenderer();
+        this.impl = JOGLRenderer.getInstance();
         canvas.addGLEventListener(impl);
 
         JFrame frame = new JFrame("Chess");

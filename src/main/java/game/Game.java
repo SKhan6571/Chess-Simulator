@@ -111,7 +111,8 @@ public class Game {
 
     // this determines whether the renderer should rotate the board or not
     public boolean shouldRotateBoard(){
-        // TODO: determine whether the board should be rotated
-        return true; // always true for now
+        // TODO: determine whether the board should be rotated (change canRotate)
+        boolean canRotate = true;
+        return canRotate && getTurnColor() == Color.Black;
     }
 }

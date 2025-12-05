@@ -19,8 +19,15 @@ import java.util.List;
 import pieces.Color;
 
 public class JOGLRenderer implements GLEventListener {
-    static private final int TEXTURE_HEIGHT = 1028;
-    static private final int TEXTURE_WIDTH = 1028;
+    private static JOGLRenderer instance;
+
+    public static JOGLRenderer getInstance() {
+        if (instance == null) instance = new JOGLRenderer();
+        return instance;
+    }
+
+    private JOGLRenderer() {}
+
     static private final String TEXTURES_PATH = "textures/default_textures";
 
     static private final int RANK_COUNT = 8;
@@ -41,6 +48,7 @@ public class JOGLRenderer implements GLEventListener {
     void clear() { // mostly for aesthetics, and external usage
         gl.glClear(GL.GL_COLOR_BUFFER_BIT);
     }
+
 
 
     private Texture getTextureForTile(Tile tile) {
@@ -75,12 +83,16 @@ public class JOGLRenderer implements GLEventListener {
 
     }
 
+    int castBoardRank(int rank) {
+        return game.shouldRotateBoard() ? 7 - rank : rank;
+    }
+
+    int castBoardFile(int file) {
+        return game.shouldRotateBoard() ? 7 - file : file;
+    }
+
     void drawTexturedQuadBoardCoords(Texture tex, int rank, int file) {
-        if (game.shouldRotateBoard() && game.getCurrentTurnColor() == Color.Black) {
-            drawTexturedQuad(tex, 7 - file, 7 - rank, 1, 1); // invert the board
-        } else {
-            drawTexturedQuad(tex, file, rank, 1, 1);
-        }
+        drawTexturedQuad(tex, castBoardFile(file), castBoardRank(rank), 1, 1);
     }
 
     void drawTexturedQuad(Texture tex, float x, float y, float width, float height) {
@@ -156,7 +168,15 @@ public class JOGLRenderer implements GLEventListener {
     }
 
     public void setHighlightedTiles(List<Tile> highlightedTiles) {
-        this.highlightedTiles = highlightedTiles;
+        // need to reflect over y=x axis for rendering (dont ask me)
+        List<Tile> newHighlightedTiles = new ArrayList<>();
+        for(Tile tile : highlightedTiles){
+            int rank = tile.getRank();
+            int file = tile.getFile();
+            Tile newTile = board.getTile(file, rank);
+            newHighlightedTiles.add(newTile);
+        }
+        this.highlightedTiles = newHighlightedTiles;
     }
 
     /// Loads all textures (rasterized image files) in the directory it is given (recursively).
@@ -270,9 +290,5 @@ public class JOGLRenderer implements GLEventListener {
         public Map<String, Texture> getAll() {
             return Collections.unmodifiableMap(textureMap);
         }
-    }
-
-    private static class LowLevelRenderer {
-
     }
 }
