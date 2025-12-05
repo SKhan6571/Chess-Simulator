@@ -1,3 +1,4 @@
+import board.Board;
 import board.Tile;
 import game.Command;
 import game.Game;
@@ -9,6 +10,8 @@ import renderer.ConsoleGameObserver;
 import renderer.JOGLGameObserver;
 import renderer.Renderer;
 
+import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Scanner;
 
@@ -18,6 +21,13 @@ import java.util.Scanner;
 //at any time during the game, type 'quit' to exit
 public class Chess {
     public static void main(String[] args) {
+
+        try {
+            System.setOut(new PrintStream(System.out, true, StandardCharsets.UTF_8));
+        } catch (Exception e) {
+            System.err.println("Could not set UTF-8 encoding");
+        }
+
         // Singleton: Get the single instance of Game
         Game game = Game.getInstance();
 
@@ -41,6 +51,5 @@ public class Chess {
                 Thread.currentThread().interrupt();
             }
         }
-
     }
 }

@@ -12,6 +12,11 @@ public abstract class Piece {
     protected final Color color;
     public Piece(Color color) { this.color = color; }
     public Color getColor() { return color; }
+
+    // Helper to identify King without accessing package-private King class
+    public boolean isKing() {
+        return false;
+    }
     
     @Override //for the display of the pieces
     public abstract String toString(); 
@@ -26,6 +31,38 @@ public abstract class Piece {
     // NOTE: You only need to provide positive directions
     protected abstract int[][] getMoveDirections();
     protected abstract boolean isSliding(); // KNIGHT KING AND PAWN WILL RETURN FALSE (bc they only move 1 space at a time)
+
+    // Returns the squares this piece attacks (threatens).
+    // By default, this is the same as possible moves for most pieces (Rook, Bishop, etc.)
+    // Pawns will override this because they attack diagonally but move forward.
+    public List<Tile> getThreatenedTiles(Board board, Tile start) {
+        return getPossibleMoves(board, start);
+    }
+
+    // Calculates "Legal" moves: Possible moves minus ones that result in self-check
+    public List<Tile> getLegalMoves(Board board, Tile start) {
+        List<Tile> candidates = getPossibleMoves(board, start);
+        List<Tile> legalMoves = new ArrayList<>();
+
+        for (Tile target : candidates) {
+            // 1. Simulate the move
+            Piece originalPieceOnTarget = target.getPiece();
+
+            target.setPiece(this);
+            start.setPiece(null);
+
+            // 2. Check if this leaves our King in check
+            if (!board.isInCheck(this.color)) {
+                legalMoves.add(target);
+            }
+
+            // 3. Undo the simulation
+            start.setPiece(this);
+            target.setPiece(originalPieceOnTarget);
+        }
+        return legalMoves;
+    }
+
     //then the details of movement direction and sliding is used to get all th epossible moves for the selected piece
     // pawn just overrides this method entirely to account for its special movement rules
     public List<Tile> getPossibleMoves(Board board, Tile start) {

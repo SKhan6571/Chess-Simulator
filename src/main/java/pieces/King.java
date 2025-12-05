@@ -9,6 +9,11 @@ class King extends Piece {
     @Override
     protected boolean isSliding() { return false; }
 
+    @Override
+    public boolean isKing() {
+        return true;
+    }
+
     // for the display of the piece
     @Override
     public String toString() {
