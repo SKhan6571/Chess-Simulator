@@ -4,6 +4,7 @@ import board.Board;
 import board.Tile;
 import com.jogamp.opengl.*;
 import com.jogamp.opengl.awt.GLCanvas;
+import game.Game;
 
 import javax.swing.*;
 import java.util.List;
@@ -38,8 +39,8 @@ public class JOGLFacade implements Renderer {
     }
 
     @Override
-    public void setBoard(Board board) {
-        impl.setBoard(board);
+    public void setGame(Game game) {
+        impl.setGame(game);
     }
 
     @Override

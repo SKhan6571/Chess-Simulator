@@ -5,6 +5,8 @@ import board.Tile;
 import com.jogamp.opengl.*;
 import com.jogamp.opengl.util.texture.Texture;
 import com.jogamp.opengl.util.texture.TextureIO;
+import game.Game;
+import pieces.Piece;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,13 +25,14 @@ public class JOGLRenderer implements GLEventListener {
 
 
     private Board board;
+    private Game game;
     private List<Tile> highlightedTiles = new ArrayList<>();
     private GL2 gl;
     private final TextureLoader textures = new TextureLoader(TEXTURES_PATH); // may want to consider making this configurable
 
-
-    void setBoard(Board board) {
-        this.board = board;
+    void setGame(Game game) {
+        this.game = game;
+        this.board = game.getBoard();
     }
 
     void clear() { // mostly for aesthetics, and external usage
@@ -44,6 +47,10 @@ public class JOGLRenderer implements GLEventListener {
         return textures.getTexture(name);
     }
 
+    private Texture getTextureForPiece(Piece piece) {
+        return textures.getTexture(piece.getTexture());
+    }
+
     void drawBoard() {
         for (int rank = 0; rank < RANK_COUNT; rank++) {
             // order doesn't matter, as long as the coords are calculated correctly!
@@ -56,8 +63,13 @@ public class JOGLRenderer implements GLEventListener {
     }
 
     void drawPieces() {
-        // TODO: I need a list of active pieces to draw, this code needs to be FAST, so searching every tile is not acceptable!
         // parse the board and draw pieces
+        List<Tile> activeTiles = game.getPiecesOnBoard();
+        for (Tile tile : activeTiles) {
+            Piece piece = tile.getPiece();
+            Texture tex = getTextureForPiece(piece);
+            drawTexturedQuadBoardCoords(tex, tile.getRank(), tile.getFile());
+        }
 
     }
 

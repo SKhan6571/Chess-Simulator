@@ -16,7 +16,11 @@ public abstract class Piece {
     @Override //for the display of the pieces
     public abstract String toString(); 
 
-
+    public String getTexture(){
+        String color = this.getColor() == Color.Black ? "black_" : "white_";
+        String name = this.getClass().getSimpleName().toLowerCase();
+        return color + name;
+    }
 
     //abstract attributes to be implemented by child classes
     // NOTE: You only need to provide positive directions
@@ -67,7 +71,6 @@ public abstract class Piece {
     protected boolean isValidCoordinate(int nextRank, int nextFile) {
         return (nextRank >= 0 && nextRank < 8) && (nextFile >= 0 && nextFile < 8);
     }
-
 
 
 

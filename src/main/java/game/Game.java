@@ -23,6 +23,7 @@ public class Game {
     private Game() {
         this.board = new Board();
         this.piecesOnBoard = new ArrayList<>();
+        scanBoardForPieces();
         this.moveCount = 1;
     }
 
@@ -74,6 +75,18 @@ public class Game {
 
     public Board getBoard() {
         return board;
+    }
+
+    private void scanBoardForPieces() {
+        piecesOnBoard.clear();
+        for (int rank = 0; rank < 8; rank++) {
+            for (int file = 0; file < 8; file++) {
+                Tile tile = board.getTile(rank, file);
+                if (tile.getPiece() != null) {
+                    piecesOnBoard.add(tile);
+                }
+            }
+        }
     }
 
     public List<Tile> getPiecesOnBoard() {

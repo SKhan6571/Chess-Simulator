@@ -2,6 +2,7 @@ package renderer;
 
 import board.Board;
 import board.Tile;
+import game.Game;
 
 import java.util.List;
 
@@ -11,7 +12,7 @@ public interface Renderer {
     void render();
     void clear();
 
-    void setBoard(Board board);
+    void setGame(Game game);
     void setHighlightedTiles(List<Tile> highlightedTiles);
     java.awt.Component getComponent(); // for mouse attaching mouse input (null if not applicable)
 }
