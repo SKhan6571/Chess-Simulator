@@ -20,7 +20,24 @@ class Pawn extends Piece {
         return this.getColor() == Color.Black ? "\u2659" : "\u265F";
     }
 
+    // Pawn threats are distinct from movement (attacks diagonal, moves forward)
+    @Override
+    public List<Tile> getThreatenedTiles(Board board, Tile start) {
+        List<Tile> threats = new ArrayList<>();
+        int rank = start.getRank();
+        int file = start.getFile();
+        int direction = (this.getColor() == Color.White) ? 1 : -1;
 
+        int nextRank = rank + direction;
+        int[] captureFiles = {file - 1, file + 1};
+
+        for (int captureFile : captureFiles) {
+            if (isValidCoordinate(nextRank, captureFile)) {
+                threats.add(board.getTile(nextRank, captureFile));
+            }
+        }
+        return threats;
+    }
 
 
 //CUSTOM MOVE GENERATION FOR PAWN
