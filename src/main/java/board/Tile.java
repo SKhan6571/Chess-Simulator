@@ -1,6 +1,8 @@
 package board;
 import pieces.Piece;
 
+import pieces.Color;
+
 public class Tile {
     private Piece piece;
     protected int rank;
@@ -31,5 +33,21 @@ public class Tile {
 
     public int getFile() {
         return this.file;
+    }
+
+    public Color getColor() {
+        return ((file + rank) % 2 == 0) ? Color.White : Color.Black;
+    }
+
+    public String toString() {
+        char fileLetter = (char) ('a' + file);
+        int rankNumber = 1 + rank;
+        return "" + fileLetter + rankNumber;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof Tile objTile)) return false;
+        return (this.rank == objTile.getRank()) && (this.file == objTile.file);
     }
 }

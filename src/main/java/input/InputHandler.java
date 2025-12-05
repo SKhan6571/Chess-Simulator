@@ -2,119 +2,88 @@ package input;
 
 import board.Board;
 import board.Tile;
-import game.Command;
 import game.Game;
 import game.MoveCommand;
 import pieces.Color;
 import pieces.Piece;
-import renderer.BoardPrinter;
 
 import java.util.List;
-import java.util.Scanner;
 
-public class InputHandler {
-    //helper function to parse standard chess notation like for the ascii board input
-    public static int[] parseInput(String input) {
+public abstract class InputHandler {
+    Game game;
+    Tile start;
+    List<Tile> allowedMoves;
 
+    boolean source = true;
 
-        //find collumn from standard chess notation like 'e2'
-        char fileChar = input.charAt(0);
-        int file = fileChar - 'a';       // in ascii: 'e'-'a'= (101)-(97) = 4
-
-        // get the rank
-        char rankChar = input.charAt(1);
-        int rank = Character.getNumericValue(rankChar) - 1; // 2 - 1 = 1
-
-        return new int[]{rank, file};
+    public InputHandler(Game game) {
+        this.game = game;
     }
 
-    // Returns a Tile to move FROM, or null if quitting/undoing
-    public static Tile promptForSourceTile(Scanner scanner, Game game) {
-        Board board = game.getBoard();
-        Color currentTurnColor = game.getCurrentTurnColor();
+    public abstract void handleInput(InputEvent event);
 
-        while (true) {
-            System.out.print("Enter piece to move (e.g. 'e2'), 'undo', or 'quit': ");
-            String rawInput = scanner.nextLine();
+    public void highLightTiles(List<Tile> tiles){
+        game.getBoard().highlightTiles(tiles);
+    }
 
-            // secret option to exit
-            if (rawInput.equals("q") || rawInput.equals("quit") || rawInput.equals("exit")) {
-                final int dummyRank = -1;
-                final int dummyFile = -1;
-                return new Tile(dummyRank, dummyFile);
-            }
+    /// This function handles the actual logic of checking if the input is valid, the abstract method calls this method
+    /// This is a general method, and should not be expected to handle any quirks of a certain source.
+    protected void handleInputLogic(Tile target,int[] coords){
+        // parse input and verify it is valid
+        try {
+            Board board = game.getBoard();
+            Color currentTurnColor = game.getCurrentTurnColor();
 
-            // Hook for Undo
-            if (rawInput.equals("undo")) {
-                game.undoLastMove();
-                // Reprint board after undo since we are still in this loop
-                return null; // Return null to restart loop in Main
-            }
-
-            //use try catch to handle invalid input and restart loop
-            try {
-                int[] pieceLocation = InputHandler.parseInput(rawInput);
-                Tile target = board.getTile(pieceLocation[0], pieceLocation[1]);
-
+            // check validity of source input
+            if (source) {
                 // VALIDATION CHECKS
-                //is tile occupied
+                //is the tile occupied
                 if (!target.isOccupied()) {
-                    System.out.println("Error: There is no piece at " + rawInput + ". Try again!");
-                    continue; 
+                    System.out.println("Error: There is no piece at " + target.toString() + ". Try again!");
+                    return;
                 }
 
-                //is piece the correct color for the current turn
+                //is the piece the correct color for the current turn?
                 Piece pieceOnTile = target.getPiece();
                 if (pieceOnTile.getColor() != currentTurnColor) {
                     System.out.println("Error: That is a " + pieceOnTile.getColor() + " piece! It is " + currentTurnColor + "'s turn. Try again!");
-                    continue; 
+                    return;
                 }
 
-                //does the piece have any valid moves
-                List<Tile> moves = pieceOnTile.getLegalMoves(board, target);
+                //does the piece have any valid moves?
+                List<Tile> moves = pieceOnTile.getPossibleMoves(board, target);
                 if (moves.isEmpty()) {
-                    System.out.println("Error: That piece has no legal moves (Check?)! Try again!");
-                    continue; 
+                    System.out.println("Error: That piece has no valid moves! Try again!");
+                    return;
+                }else{
+                    allowedMoves = moves;
                 }
-
-                // If we get here then the piece exists, is proper color, and has valid moves. Return the tile!
-                return target;
-
-            } catch (Exception e) {
-                System.out.println("Error: Invalid input.");
             }
-        }
-    }
+            // check validity of destination input
+            else {
+                //  parse input and get the target tile
+                Tile targetTile = board.getTile(coords[0], coords[1]);
 
-    // Returns a Command to execute, or null if cancelled
-    public static Command promptForDestination(Scanner scanner, Game game, Tile startTile, List<Tile> allowedMoves) {
-        Board board = game.getBoard();
-        Piece pieceToMove = startTile.getPiece();
-
-        while (true) {
-            System.out.print("Enter destination for " + pieceToMove + " (or 'cancel'): ");
-            String destInput = scanner.nextLine();
-
-            if (destInput.equals("cancel")) {
-                BoardPrinter.printBoard(board); // Re-print clean board
-                return null;
-            }
-
-            //use try catch to handle invalid input
-            try {
-                //  parse input and get target tile
-                int[] destCoords = InputHandler.parseInput(destInput);
-                Tile targetTile = board.getTile(destCoords[0], destCoords[1]);
-
-                if (allowedMoves.contains(targetTile)) {
-                    // Create the command instead of executing directly
-                    return new MoveCommand(game, startTile, targetTile);
-                } else {
+                if (!allowedMoves.contains(targetTile)) {
                     System.out.println("Invalid move! That tile is not highlighted. Try again!");
+                    return;
                 }
-            } catch (Exception e) {
-                System.out.println("Invalid destination format.");
+
             }
+        } catch (Exception e) {
+            System.out.println("Error: Invalid input.");
         }
+
+        // either cache the source or execute the move
+        if (target == null) return;
+        if (source) {
+            start = target;
+            highLightTiles(allowedMoves);
+        } else {
+            game.executeMove(new MoveCommand(game, start, target));
+            highLightTiles(List.of());
+            start = null;
+        }
+        source = !source;
     }
 }

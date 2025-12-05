@@ -1,14 +1,18 @@
 package renderer;
 
 import board.Board;
+import board.Tile;
+import game.Game;
+
+import java.util.List;
 
 public interface Renderer {
     // The renderer will assume that the board is located at a constant location in memory, set by 'setBoard()'.
-    // The update() and render() methods will be called every frame. May add a wrapper that calls both.
 
-    void render(); // call update() before render()
-    void update();
+    void render();
     void clear();
 
-    void setBoard(Board board);
+    void setGame(Game game);
+    void setHighlightedTiles(List<Tile> highlightedTiles);
+    java.awt.Component getComponent(); // for mouse attaching mouse input (null if not applicable)
 }
