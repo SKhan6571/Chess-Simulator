@@ -10,5 +10,5 @@ required rules for chess, and also implements features for enhanced usability.
 
 1. Clone or fork this repo on your local machine
 2. Navigate to the project directory in a terminal
-3. Enter 'java Chess.java' (without the quotation marks)
+3. Enter './gradlew run' (without the quotation marks)
 4. Enjoy!
