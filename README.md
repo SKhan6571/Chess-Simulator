@@ -16,10 +16,14 @@ required rules for chess, and also implements features for enhanced usability.
 ### How to Use it
 
 1. Download the 'Chess-Simulator-ASCII-Implementation' source code under the 'Releases' tab
+   
     2. You may download the source code as either a 'zip' or 'tar.gz' file
+       
 3. Once downloaded, extract the source code for the chosen file format
 4. Then navigate to the project directory in a terminal
+   
     5. Directory should have this format: ../Chess-Simulator-1.0.0/Chess-Simulator-1.0.0/src/main/java
+       
 6. Enter 'javac *.java' in the terminal (without the quotation marks)
 7. Enter 'java Chess.java' (without the quotation marks)
 8. Enjoy!
